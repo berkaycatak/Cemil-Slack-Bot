@@ -107,6 +107,29 @@ class GroqClient(metaclass=SingletonMeta):
         ]
         return await self.chat_completion(messages, model=model)
 
+    async def transcribe_audio(self, audio_content: bytes, filename: str = "audio.mp3", model: str = "whisper-large-v3") -> str:
+        """
+        Ses dosyasını metne çevirir (Speech-to-Text).
+        Groq'un Whisper modelini kullanır.
+        """
+        try:
+            logger.info(f"[>] Ses transkripsiyonu başlatılıyor ({model})...")
+            # Groq API dosya objesi bekler (isim ve içerik)
+            # BytesIO kullanmak yerine doğrudan tuple formatı da desteklenir: (filename, content)
+            
+            transcription = await self.client.audio.transcriptions.create(
+                file=(filename, audio_content),
+                model=model,
+                response_format="text",
+                temperature=0.0
+            )
+            
+            logger.info("[+] Transkripsiyon tamamlandı.")
+            return transcription
+        except Exception as e:
+            logger.error(f"[X] Transkripsiyon hatası: {e}")
+            raise GroqClientError(f"Transcription failed: {str(e)}")
+
     async def close(self):
         """İstemciyi kapatır."""
         await self.client.close()

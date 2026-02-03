@@ -7,6 +7,7 @@ from .statistics_service import StatisticsService
 from .challenge_enhancement_service import ChallengeEnhancementService
 from .challenge_hub_service import ChallengeHubService
 from .challenge_evaluation_service import ChallengeEvaluationService
+from .fill_the_blank_service import FillTheBlankService
 
 __all__ = [
     "CoffeeMatchService",
@@ -18,4 +19,5 @@ __all__ = [
     "ChallengeEnhancementService",
     "ChallengeHubService",
     "ChallengeEvaluationService",
+    "FillTheBlankService",
 ]

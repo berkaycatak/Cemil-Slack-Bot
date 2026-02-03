@@ -37,3 +37,7 @@ class PermissionDeniedError(CemilBotError):
     """Yetkisiz erişim denemelerinde fırlatılan hata."""
     def __init__(self, message="Bu işlem için yetkiniz bulunmuyor.", extra=None):
         super().__init__(message, extra)
+
+class ServiceError(CemilBotError):
+    """Servis katmanında oluşan genel hatalar."""
+    pass
