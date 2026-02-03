@@ -19,7 +19,8 @@ from src.clients import (
     GroqClient,
     CronClient,
     VectorClient,
-    SMTPClient
+    SMTPClient,
+    SongIQClient
 )
 
 # --- Commands (Slack API Wrappers) ---
@@ -45,7 +46,8 @@ from src.repositories import (
     ChallengeThemeRepository,
     UserChallengeStatsRepository,
     ChallengeEvaluationRepository,
-    ChallengeEvaluatorRepository
+    ChallengeEvaluatorRepository,
+    FillTheBlankRepository
 )
 
 # --- Services ---
@@ -58,7 +60,8 @@ from src.services import (
     StatisticsService,
     ChallengeEnhancementService,
     ChallengeHubService,
-    ChallengeEvaluationService
+    ChallengeEvaluationService,
+    FillTheBlankService
 )
 
 # --- Handlers ---
@@ -72,7 +75,8 @@ from src.handlers import (
     setup_help_handlers,
     setup_statistics_handlers,
     setup_challenge_handlers,
-    setup_challenge_evaluation_handlers
+    setup_challenge_evaluation_handlers,
+    setup_fill_the_blank_handlers
 )
 
 # Non-interactive mod (CI / prod deploy) için flag
@@ -101,6 +105,7 @@ groq_client = GroqClient()
 cron_client = CronClient()
 vector_client = VectorClient()
 smtp_client = SMTPClient()
+songiq_client = SongIQClient()
 logger.info("[+] Client'lar hazır.")
 
 # ============================================================================
@@ -142,6 +147,7 @@ challenge_theme_repo = ChallengeThemeRepository(db_client)
 user_challenge_stats_repo = UserChallengeStatsRepository(db_client)
 challenge_evaluation_repo = ChallengeEvaluationRepository(db_client)
 challenge_evaluator_repo = ChallengeEvaluatorRepository(db_client)
+fill_the_blank_repo = FillTheBlankRepository(db_client)
 logger.info("[+] Repository'ler hazır.")
 
 # ============================================================================
@@ -186,6 +192,11 @@ challenge_hub_service = ChallengeHubService(
     db_client=db_client,
     evaluation_service=challenge_evaluation_service
 )
+fill_the_blank_service = FillTheBlankService(
+    fill_the_blank_repo,
+    songiq_client,
+    groq_client
+)
 logger.info("[+] Servisler hazır.")
 
 # ============================================================================
@@ -203,6 +214,7 @@ setup_help_handlers(app, help_service, chat_manager, user_repo)
 setup_statistics_handlers(app, statistics_service, chat_manager, user_repo)
 setup_challenge_handlers(app, challenge_hub_service, challenge_evaluation_service, chat_manager, user_repo)
 setup_challenge_evaluation_handlers(app, challenge_evaluation_service, challenge_hub_service, chat_manager, user_repo)
+setup_fill_the_blank_handlers(app, fill_the_blank_service)
 logger.info("[+] Handler'lar kaydedildi.")
 
 # ============================================================================

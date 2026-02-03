@@ -12,6 +12,7 @@ from .help_handler import setup_help_handlers
 from .statistics_handler import setup_statistics_handlers
 from .challenge_handler import setup_challenge_handlers
 from .challenge_evaluation_handler import setup_challenge_evaluation_handlers
+from .fill_the_blank_handler import setup_fill_the_blank_handlers
 
 __all__ = [
     'setup_coffee_handlers',
@@ -24,4 +25,5 @@ __all__ = [
     'setup_statistics_handlers',
     'setup_challenge_handlers',
     'setup_challenge_evaluation_handlers',
+    'setup_fill_the_blank_handlers',
 ]
