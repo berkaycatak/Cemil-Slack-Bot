@@ -1,4 +1,4 @@
-# 🤖 Cemil Bot - Akıllı Topluluk Asistanı
+# 🤖 Cemil Bot - Akıllı Topluluk Asistanı..
 
 Cemil, Slack çalışma alanları için geliştirilmiş; yapay zeka destekli, modüler ve etkileşim odaklı bir topluluk botudur. Ekiplerin sosyalleşmesini, geri bildirim vermesini ve bilgiye hızlı erişmesini sağlar.
 
