@@ -58,7 +58,8 @@ from src.services import (
     StatisticsService,
     ChallengeEnhancementService,
     ChallengeHubService,
-    ChallengeEvaluationService
+    ChallengeEvaluationService,
+    TournamentService,
 )
 
 # --- Handlers ---
@@ -73,7 +74,8 @@ from src.handlers import (
     setup_help_handlers,
     setup_statistics_handlers,
     setup_challenge_handlers,
-    setup_challenge_evaluation_handlers
+    setup_challenge_evaluation_handlers,
+    setup_tournament_handlers
 )
 
 # Non-interactive mod (CI / prod deploy) için flag
@@ -187,6 +189,7 @@ challenge_hub_service = ChallengeHubService(
     db_client=db_client,
     evaluation_service=challenge_evaluation_service
 )
+tournament_service = TournamentService()
 logger.info("[+] Servisler hazır.")
 
 # ============================================================================
@@ -205,6 +208,7 @@ setup_help_handlers(app, help_service, chat_manager, user_repo)
 setup_statistics_handlers(app, statistics_service, chat_manager, user_repo)
 setup_challenge_handlers(app, challenge_hub_service, challenge_evaluation_service, chat_manager, user_repo)
 setup_challenge_evaluation_handlers(app, challenge_evaluation_service, challenge_hub_service, chat_manager, user_repo)
+setup_tournament_handlers(app, tournament_service, chat_manager, user_repo)
 logger.info("[+] Handler'lar kaydedildi.")
 
 # ============================================================================

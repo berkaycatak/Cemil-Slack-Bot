@@ -12,6 +12,11 @@ from .challenge_theme_repository import ChallengeThemeRepository
 from .user_challenge_stats_repository import UserChallengeStatsRepository
 from .challenge_evaluation_repository import ChallengeEvaluationRepository
 from .challenge_evaluator_repository import ChallengeEvaluatorRepository
+from .tournament_repository import TournamentRepository
+from .tournament_participant_repository import TournamentParticipantRepository
+from .tournament_match_repository import TournamentMatchRepository
+from .tournament_points_repository import TournamentPointsRepository
+
 
 __all__ = [
     "UserRepository",
@@ -28,4 +33,8 @@ __all__ = [
     "UserChallengeStatsRepository",
     "ChallengeEvaluationRepository",
     "ChallengeEvaluatorRepository",
+    "TournamentRepository",
+    "TournamentParticipantRepository",
+    "TournamentMatchRepository",
+    "TournamentPointsRepository",
 ]
