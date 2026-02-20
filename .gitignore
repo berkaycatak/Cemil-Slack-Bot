@@ -33,6 +33,9 @@ env/
 *.swo
 *~
 
+# Claude Code
+.claude/
+
 # Environment variables
 .env
 .env.local
