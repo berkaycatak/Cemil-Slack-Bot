@@ -235,3 +235,84 @@ class ChallengeJoinRequest(BaseModel):
             return cls(challenge_id=None)
         return cls(challenge_id=text)
 
+
+class TermRequest(BaseModel):
+    """Glossary terim önerisi için input validation (/terim komutu)."""
+
+    term: str = Field(..., description="Terim adı")
+
+    @field_validator('term')
+    @classmethod
+    def validate_term(cls, v: str) -> str:
+        """Terim adını doğrula ve temizle."""
+        v = v.strip()
+        if not v:
+            raise ValueError('Terim adı boş olamaz')
+        if len(v) > 200:
+            raise ValueError('Terim adı en fazla 200 karakter olabilir')
+        return v
+
+    @classmethod
+    def parse_from_text(cls, text: str) -> 'TermRequest':
+        """
+        /terim komutundan gelen text'i parse eder.
+        Format: /terim Gradient Descent
+        """
+        if not text or not text.strip():
+            raise ValueError("Terim adı gerekli. Örnek: /terim Gradient Descent")
+        return cls(term=text.strip())
+
+
+class DefinitionRequest(BaseModel):
+    """Glossary açıklama ekleme için input validation (/acikla komutu)."""
+
+    term: str = Field(..., description="Terim adı")
+    definition: str = Field(..., description="Açıklama metni")
+
+    @field_validator('term')
+    @classmethod
+    def validate_term(cls, v: str) -> str:
+        """Terim adını doğrula."""
+        v = v.strip()
+        if not v:
+            raise ValueError('Terim adı boş olamaz')
+        if len(v) > 200:
+            raise ValueError('Terim adı en fazla 200 karakter olabilir')
+        return v
+
+    @field_validator('definition')
+    @classmethod
+    def validate_definition(cls, v: str) -> str:
+        """Açıklama metnini doğrula."""
+        v = v.strip()
+        if not v:
+            raise ValueError('Açıklama metni boş olamaz')
+        if len(v) > 2000:
+            raise ValueError('Açıklama en fazla 2000 karakter olabilir')
+        return v
+
+    @classmethod
+    def parse_from_text(cls, text: str) -> 'DefinitionRequest':
+        """
+        /acikla komutundan gelen text'i parse eder.
+        Format: /acikla Gradient Descent | Bir optimizasyon algoritması
+        İlk pipe (|) ayırıcıdır, sonraki pipe'lar açıklamanın parçasıdır.
+        """
+        if not text or not text.strip():
+            raise ValueError("Format: /acikla Terim | Açıklama")
+
+        if '|' not in text:
+            raise ValueError("Terim ve açıklama '|' ile ayrılmalı. Örnek: /acikla Docker | Konteyner teknolojisi")
+
+        # İlk pipe'dan böl — sonraki pipe'lar açıklamada kalır
+        parts = text.split('|', 1)
+        term = parts[0].strip()
+        definition = parts[1].strip()
+
+        if not term:
+            raise ValueError("Terim adı boş olamaz")
+        if not definition:
+            raise ValueError("Açıklama metni boş olamaz")
+
+        return cls(term=term, definition=definition)
+

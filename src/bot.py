@@ -45,7 +45,14 @@ from src.repositories import (
     ChallengeThemeRepository,
     UserChallengeStatsRepository,
     ChallengeEvaluationRepository,
-    ChallengeEvaluatorRepository
+    ChallengeEvaluatorRepository,
+    GlossaryTermRepository,
+    GlossaryDefinitionRepository,
+    GlossaryReactionRepository,
+    DailyTermLogRepository,
+    DailyTermReactionRepository,
+    QuizSessionRepository,
+    QuizAnswerRepository,
 )
 
 # --- Services ---
@@ -58,7 +65,9 @@ from src.services import (
     StatisticsService,
     ChallengeEnhancementService,
     ChallengeHubService,
-    ChallengeEvaluationService
+    ChallengeEvaluationService,
+    GlossaryService,
+    QuizService,
 )
 
 # --- Handlers ---
@@ -73,7 +82,9 @@ from src.handlers import (
     setup_help_handlers,
     setup_statistics_handlers,
     setup_challenge_handlers,
-    setup_challenge_evaluation_handlers
+    setup_challenge_evaluation_handlers,
+    setup_glossary_handlers,
+    setup_quiz_handlers,
 )
 
 # Non-interactive mod (CI / prod deploy) için flag
@@ -143,6 +154,13 @@ challenge_theme_repo = ChallengeThemeRepository(db_client)
 user_challenge_stats_repo = UserChallengeStatsRepository(db_client)
 challenge_evaluation_repo = ChallengeEvaluationRepository(db_client)
 challenge_evaluator_repo = ChallengeEvaluatorRepository(db_client)
+glossary_term_repo = GlossaryTermRepository(db_client)
+glossary_definition_repo = GlossaryDefinitionRepository(db_client)
+glossary_reaction_repo = GlossaryReactionRepository(db_client)
+daily_term_log_repo = DailyTermLogRepository(db_client)
+daily_term_reaction_repo = DailyTermReactionRepository(db_client)
+quiz_session_repo = QuizSessionRepository(db_client)
+quiz_answer_repo = QuizAnswerRepository(db_client)
 logger.info("[+] Repository'ler hazır.")
 
 # ============================================================================
@@ -187,6 +205,14 @@ challenge_hub_service = ChallengeHubService(
     db_client=db_client,
     evaluation_service=challenge_evaluation_service
 )
+glossary_service = GlossaryService(
+    chat_manager, groq_client, cron_client,
+    glossary_term_repo, glossary_definition_repo, glossary_reaction_repo,
+    daily_term_log_repo, daily_term_reaction_repo, user_repo,
+)
+quiz_service = QuizService(
+    groq_client, glossary_term_repo, quiz_session_repo, quiz_answer_repo
+)
 logger.info("[+] Servisler hazır.")
 
 # ============================================================================
@@ -205,6 +231,8 @@ setup_help_handlers(app, help_service, chat_manager, user_repo)
 setup_statistics_handlers(app, statistics_service, chat_manager, user_repo)
 setup_challenge_handlers(app, challenge_hub_service, challenge_evaluation_service, chat_manager, user_repo)
 setup_challenge_evaluation_handlers(app, challenge_evaluation_service, challenge_hub_service, chat_manager, user_repo)
+setup_glossary_handlers(app, glossary_service, chat_manager, user_repo)
+setup_quiz_handlers(app, quiz_service, glossary_service, chat_manager, user_repo)
 logger.info("[+] Handler'lar kaydedildi.")
 
 # ============================================================================
@@ -253,6 +281,31 @@ try:
     logger.info("[+] Challenge recruitment zaman aşımı kontrolü başlatıldı (her gün 03:00)")
 except Exception as e:
     logger.warning(f"[!] Challenge recruitment zaman aşımı kontrolü başlatılamadı: {e}")
+
+# ============================================================================
+# PERİYODİK GÖREVLER (Glossary Günlük Bülten)
+# ============================================================================
+
+def send_glossary_daily_post():
+    """Her sabah 09:00'da serbest-kürsü kanalına günlük terim bülteni gönderir."""
+    try:
+        glossary_channel = os.environ.get("GLOSSARY_DAILY_CHANNEL")
+        if glossary_channel:
+            glossary_service.send_daily_post(glossary_channel)
+        else:
+            logger.warning("[!] GLOSSARY_DAILY_CHANNEL ayarlanmamış, günlük bülten atlandı.")
+    except Exception as e:
+        logger.error(f"[X] Günlük glossary bülteni hatası: {e}", exc_info=True)
+
+try:
+    cron_client.add_cron_job(
+        func=send_glossary_daily_post,
+        cron_expression={"hour": "9", "minute": "0"},
+        job_id="glossary_daily_post"
+    )
+    logger.info("[+] Glossary günlük bülten görevi başlatıldı (her gün 09:00)")
+except Exception as e:
+    logger.warning(f"[!] Glossary günlük bülten görevi başlatılamadı: {e}")
 
 # ============================================================================
 # EVENT HANDLERS (Challenge Kanalı Yetkisiz Kullanıcı Kontrolü)

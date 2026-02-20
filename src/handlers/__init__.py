@@ -13,6 +13,8 @@ from .help_handler import setup_help_handlers
 from .statistics_handler import setup_statistics_handlers
 from .challenge_handler import setup_challenge_handlers
 from .challenge_evaluation_handler import setup_challenge_evaluation_handlers
+from .glossary_handler import setup_glossary_handlers
+from .quiz_handler import setup_quiz_handlers
 
 __all__ = [
     'setup_daily_handlers',
@@ -26,4 +28,6 @@ __all__ = [
     'setup_statistics_handlers',
     'setup_challenge_handlers',
     'setup_challenge_evaluation_handlers',
+    'setup_glossary_handlers',
+    'setup_quiz_handlers',
 ]

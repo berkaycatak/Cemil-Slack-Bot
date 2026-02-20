@@ -12,6 +12,13 @@ from .challenge_theme_repository import ChallengeThemeRepository
 from .user_challenge_stats_repository import UserChallengeStatsRepository
 from .challenge_evaluation_repository import ChallengeEvaluationRepository
 from .challenge_evaluator_repository import ChallengeEvaluatorRepository
+from .glossary_term_repository import GlossaryTermRepository
+from .glossary_definition_repository import GlossaryDefinitionRepository
+from .glossary_reaction_repository import GlossaryReactionRepository
+from .daily_term_log_repository import DailyTermLogRepository
+from .daily_term_reaction_repository import DailyTermReactionRepository
+from .quiz_session_repository import QuizSessionRepository
+from .quiz_answer_repository import QuizAnswerRepository
 
 __all__ = [
     "UserRepository",
@@ -28,4 +35,11 @@ __all__ = [
     "UserChallengeStatsRepository",
     "ChallengeEvaluationRepository",
     "ChallengeEvaluatorRepository",
+    "GlossaryTermRepository",
+    "GlossaryDefinitionRepository",
+    "GlossaryReactionRepository",
+    "DailyTermLogRepository",
+    "DailyTermReactionRepository",
+    "QuizSessionRepository",
+    "QuizAnswerRepository",
 ]

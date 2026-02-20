@@ -37,3 +37,11 @@ class PermissionDeniedError(CemilBotError):
     """Yetkisiz erişim denemelerinde fırlatılan hata."""
     def __init__(self, message="Bu işlem için yetkiniz bulunmuyor.", extra=None):
         super().__init__(message, extra)
+
+class GlossaryError(CemilBotError):
+    """Glossary sistemi (terim, açıklama, günlük bülten) ile ilgili hatalar."""
+    pass
+
+class QuizError(CemilBotError):
+    """Quiz sistemi (oturum, soru, puanlama) ile ilgili hatalar."""
+    pass

@@ -2,6 +2,32 @@
 Pytest configuration ve fixtures.
 """
 
+import sys
+import types
+from unittest.mock import MagicMock
+
+# Agir 3rd-party bagimliliklar test ortaminda bulunmayabilir.
+# conftest.py test modullerinden once yuklendiginden, burada
+# eksik modulleri mock'layarak import zincirini kiyoruz.
+_HEAVY_DEPS = [
+    "sentence_transformers",
+    "faiss",
+    "apscheduler",
+    "apscheduler.schedulers",
+    "apscheduler.schedulers.background",
+    "apscheduler.triggers",
+    "apscheduler.triggers.cron",
+    "apscheduler.triggers.interval",
+    "langchain_text_splitters",
+    "transformers",
+]
+for _mod in _HEAVY_DEPS:
+    if _mod not in sys.modules:
+        mock = MagicMock()
+        # importlib.util.find_spec() icin __spec__ gerekli
+        mock.__spec__ = types.ModuleType(_mod).__dict__.get("__spec__")
+        sys.modules[_mod] = mock
+
 import pytest
 import os
 import tempfile

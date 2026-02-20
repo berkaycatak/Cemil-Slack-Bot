@@ -63,6 +63,10 @@ class BotSettings(BaseSettings):
     # Knowledge Base Ayarları
     knowledge_base_path: str = Field("knowledge_base", description="Bilgi küpü klasör yolu")
     
+    # Glossary Ayarları
+    glossary_daily_channel: Optional[str] = Field(None, description="Günlük glossary bülteni kanalı (serbest-kürsü)")
+    glossary_auto_approve_threshold: float = Field(7.0, description="AI skor eşiği: bu ve üzeri otomatik onay")
+
     # Başlangıç Senaryo Ayarları (Soruları Otomatize Etmek İçin)
     db_clean_on_startup: bool = Field(False, description="Başlangıçta challenge tablolarını temizle")
     db_import_initial_users: bool = Field(False, description="Başlangıçta data/initial_users.csv dosyasını içe aktar")
