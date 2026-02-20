@@ -2,15 +2,16 @@ import uuid
 import json
 from src.core.logger import logger
 
+
 class IdeathonRepository:
     def __init__(self, db_session):
-        # db_session burada senin db_client nesnen olacak
-        self.db = db_session 
+
+        self.db = db_session
 
     async def create_team(self, creator_id, channel_id, team_size):
         """Yeni bir ideathon takımı oluşturur."""
         team_id = f"IDE-{uuid.uuid4().hex[:6].upper()}"
-        
+
         query = """
             INSERT INTO ideathon_teams (id, creator_id, channel_id, team_size, status)
             VALUES (?, ?, ?, ?, 'pending')
@@ -20,13 +21,13 @@ class IdeathonRepository:
             cursor = conn.cursor()
             cursor.execute(query, (team_id, creator_id, channel_id, team_size))
             conn.commit()
-            
+
             return {
                 "id": team_id,
                 "creator_id": creator_id,
                 "channel_id": channel_id,
                 "team_size": team_size,
-                "status": "pending"
+                "status": "pending",
             }
         except Exception as e:
             logger.error(f"[X] Team oluşturma hatası: {e}")
@@ -34,7 +35,9 @@ class IdeathonRepository:
 
     async def get_team_by_channel(self, channel_id):
         """Kanal ID'sine göre aktif takımı getirir."""
-        query = "SELECT * FROM ideathon_teams WHERE channel_id = ? AND status != 'finished'"
+        query = (
+            "SELECT * FROM ideathon_teams WHERE channel_id = ? AND status != 'finished'"
+        )
         conn = self.db.get_connection()
         cursor = conn.cursor()
         cursor.execute(query, (channel_id,))
