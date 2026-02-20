@@ -207,6 +207,14 @@ setup_challenge_handlers(app, challenge_hub_service, challenge_evaluation_servic
 setup_challenge_evaluation_handlers(app, challenge_evaluation_service, challenge_hub_service, chat_manager, user_repo)
 logger.info("[+] Handler'lar kaydedildi.")
 
+# --- MÜLAKAT SİMÜLATÖRÜ FİŞİ (BURAYA EKLENDİ) ---
+from src.services.interview_service import InterviewService
+from src.handlers.interview_handler import setup_interview_handlers
+
+interview_service = InterviewService(groq_client)
+setup_interview_handlers(app, interview_service, chat_manager)
+# ------------------------------------------------
+
 # ============================================================================
 # PERİYODİK GÖREVLER (Challenge Kanalı Yetkisiz Kullanıcı Kontrolü)
 # ============================================================================
