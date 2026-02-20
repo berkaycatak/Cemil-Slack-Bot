@@ -12,6 +12,12 @@ print("[INIT] Gerekli yapay zeka kütüphaneleri (Torch, SciPy, Transformers) y�
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.bot import app, db_client, cron_client, knowledge_service, chat_manager, user_repo, vector_client
+# --- IDEATHON EKLEMELERİ ---
+from src.repositories.ideathon_repository import IdeathonRepository
+from src.services.ideathon_service import IdeathonService
+from src.services.ai_service import GrokService
+from src.handlers.ideathon_handlers import setup_ideathon_handlers
+
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 import asyncio
 from src.core.logger import logger
@@ -27,6 +33,30 @@ def ensure_database_schema():
         logger.info("[>] Veritabanı şema kontrolü yapılıyor...")
         conn = db_client.get_connection()
         cursor = conn.cursor()
+        
+        # Ideathon Tabloları 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ideathon_teams (
+                id TEXT PRIMARY KEY,
+                creator_id TEXT NOT NULL,
+                channel_id TEXT NOT NULL,
+                team_size INTEGER NOT NULL,
+                status TEXT DEFAULT 'pending',
+                problem_statement TEXT,
+                presentation_link TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ideathon_scores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                team_id TEXT NOT NULL,
+                voter_id TEXT NOT NULL,
+                score INTEGER NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (team_id) REFERENCES ideathon_teams(id)
+            )
+        """)
         
         # challenge_hubs tablosundaki kolonları kontrol et
         cursor.execute("PRAGMA table_info(challenge_hubs)")
@@ -226,6 +256,11 @@ def main():
     
     # Şema güncellemelerini uygula (yeni kolonlar varsa ekle)
     ensure_database_schema()
+    
+    # Ideathon Servisleri
+    ide_repo = IdeathonRepository(db_client)
+    grok_service = GrokService()
+    ide_service = IdeathonService(repo=ide_repo, ai_service=grok_service)
     
     # Challenge tablolarını temizle (startup'ta) - Settings'e bağlı
     if settings.db_clean_on_startup:
@@ -543,6 +578,9 @@ def main():
     
     logger.info("[>] Slack Socket Mode handler başlatılıyor...")
     print("[i] Slack bağlantısı kuruluyor...")
+    
+    # Ideathon komutlarını Slack'e kaydet
+    setup_ideathon_handlers(app, ide_service, chat_manager)
     
     handler = SocketModeHandler(app, settings.slack_app_token)
     

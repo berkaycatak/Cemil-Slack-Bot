@@ -45,7 +45,8 @@ from src.repositories import (
     ChallengeThemeRepository,
     UserChallengeStatsRepository,
     ChallengeEvaluationRepository,
-    ChallengeEvaluatorRepository
+    ChallengeEvaluatorRepository,
+    IdeathonRepository
 )
 
 # --- Services ---
@@ -58,7 +59,9 @@ from src.services import (
     StatisticsService,
     ChallengeEnhancementService,
     ChallengeHubService,
-    ChallengeEvaluationService
+    ChallengeEvaluationService,
+    IdeathonService,
+    GrokService
 )
 
 # --- Handlers ---
@@ -73,7 +76,8 @@ from src.handlers import (
     setup_help_handlers,
     setup_statistics_handlers,
     setup_challenge_handlers,
-    setup_challenge_evaluation_handlers
+    setup_challenge_evaluation_handlers,
+    setup_ideathon_handlers
 )
 
 # Non-interactive mod (CI / prod deploy) için flag
@@ -143,6 +147,7 @@ challenge_theme_repo = ChallengeThemeRepository(db_client)
 user_challenge_stats_repo = UserChallengeStatsRepository(db_client)
 challenge_evaluation_repo = ChallengeEvaluationRepository(db_client)
 challenge_evaluator_repo = ChallengeEvaluatorRepository(db_client)
+ideathon_repo = IdeathonRepository(db_client)
 logger.info("[+] Repository'ler hazır.")
 
 # ============================================================================
@@ -187,6 +192,11 @@ challenge_hub_service = ChallengeHubService(
     db_client=db_client,
     evaluation_service=challenge_evaluation_service
 )
+grok_service = GrokService()
+ideathon_service = IdeathonService(
+    repo=ideathon_repo, 
+    ai_service=grok_service
+)
 logger.info("[+] Servisler hazır.")
 
 # ============================================================================
@@ -205,6 +215,7 @@ setup_help_handlers(app, help_service, chat_manager, user_repo)
 setup_statistics_handlers(app, statistics_service, chat_manager, user_repo)
 setup_challenge_handlers(app, challenge_hub_service, challenge_evaluation_service, chat_manager, user_repo)
 setup_challenge_evaluation_handlers(app, challenge_evaluation_service, challenge_hub_service, chat_manager, user_repo)
+setup_ideathon_handlers(app, ideathon_service, chat_manager)
 logger.info("[+] Handler'lar kaydedildi.")
 
 # ============================================================================
