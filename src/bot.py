@@ -63,6 +63,7 @@ from src.services import (
 
 # --- Handlers ---
 from src.handlers import (
+    setup_daily_handlers,
     setup_coffee_handlers,
     setup_poll_handlers,
     setup_feedback_handlers,
@@ -193,6 +194,7 @@ logger.info("[+] Servisler hazır.")
 # ============================================================================
 
 logger.info("[i] Handler'lar kaydediliyor...")
+setup_daily_handlers(app, groq_client, chat_manager)
 setup_coffee_handlers(app, coffee_service, chat_manager, user_repo)
 setup_poll_handlers(app, voting_service, chat_manager, user_repo)
 setup_feedback_handlers(app, feedback_service, chat_manager, user_repo)
@@ -204,6 +206,14 @@ setup_statistics_handlers(app, statistics_service, chat_manager, user_repo)
 setup_challenge_handlers(app, challenge_hub_service, challenge_evaluation_service, chat_manager, user_repo)
 setup_challenge_evaluation_handlers(app, challenge_evaluation_service, challenge_hub_service, chat_manager, user_repo)
 logger.info("[+] Handler'lar kaydedildi.")
+
+# --- MÜLAKAT SİMÜLATÖRÜ FİŞİ (BURAYA EKLENDİ) ---
+from src.services.interview_service import InterviewService
+from src.handlers.interview_handler import setup_interview_handlers
+
+interview_service = InterviewService(groq_client)
+setup_interview_handlers(app, interview_service, chat_manager)
+# ------------------------------------------------
 
 # ============================================================================
 # PERİYODİK GÖREVLER (Challenge Kanalı Yetkisiz Kullanıcı Kontrolü)
