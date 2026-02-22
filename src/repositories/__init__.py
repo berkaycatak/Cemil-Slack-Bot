@@ -12,6 +12,7 @@ from .challenge_theme_repository import ChallengeThemeRepository
 from .user_challenge_stats_repository import UserChallengeStatsRepository
 from .challenge_evaluation_repository import ChallengeEvaluationRepository
 from .challenge_evaluator_repository import ChallengeEvaluatorRepository
+from .ideathon_repository import IdeathonRepository
 
 __all__ = [
     "UserRepository",
@@ -28,4 +29,5 @@ __all__ = [
     "UserChallengeStatsRepository",
     "ChallengeEvaluationRepository",
     "ChallengeEvaluatorRepository",
+    "IdeathonRepository",
 ]

@@ -19,6 +19,9 @@ class BotSettings(BaseSettings):
     # Groq AI Ayarları
     groq_api_key: str = Field(..., description="Groq API Key")
     
+    # Grok AI Ayarları (xAI - Yeni eklediğimiz)
+    grok_api_key: Optional[str] = Field(None, description="xAI Grok API Key") # <--- BU SATIRI EKLE
+    
     # SMTP Ayarları (Opsiyonel)
     smtp_email: Optional[str] = Field(None, description="SMTP Email adresi")
     smtp_password: Optional[str] = Field(None, description="SMTP Password")

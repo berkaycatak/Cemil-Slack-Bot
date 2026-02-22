@@ -13,7 +13,7 @@ from .help_handler import setup_help_handlers
 from .statistics_handler import setup_statistics_handlers
 from .challenge_handler import setup_challenge_handlers
 from .challenge_evaluation_handler import setup_challenge_evaluation_handlers
-
+from .ideathon_handlers import setup_ideathon_handlers
 __all__ = [
     'setup_daily_handlers',
     'setup_coffee_handlers',
@@ -26,4 +26,5 @@ __all__ = [
     'setup_statistics_handlers',
     'setup_challenge_handlers',
     'setup_challenge_evaluation_handlers',
+    'setup_ideathon_handlers',
 ]
