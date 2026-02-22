@@ -134,7 +134,76 @@ python3 src/bot.py
 - `/geri-bildirim yemekhane Yemekler çok soğuk geliyor.`
 - Bu mesaj anonim olarak adminlere iletilir.
 
+# 🏆 Tournament System
+
+Cemil artık topluluk içinde 8 kişilik mini turnuvalar düzenleyebilir.  
+Sistem, random eşleşme, otomatik tur ilerlemesi ve haftalık puan tablosu içerir.
+
+
+## 🎯 Genel Özellikler
+
+- 8 kişilik turnuva sistemi
+- Random Quarter Final eşleşmesi
+- Otomatik Semi Final ve Final üretimi
+- Haftalık leaderboard
+- Katılım ve derece puanlama sistemi
+- Mevcut Service + Repository mimarisine uygun yapı
+
+
+## ⚙️ Komutlar
+
+### Turnuva Başlatma
+`/tournament start`
+Yeni bir turnuva başlatır (maksimum 8 kişi).
+
+### Turnuvaya Katılma
+`/tournament join`
+
+Aktif turnuvaya katılır.
+
+### Bracket Oluşturma (Admin)
+`/tournament bracket`
+8 kişi dolduğunda Quarter Final eşleşmelerini oluşturur.
+
+### Kazanan Belirleme (Admin)
+`/tournament win <ROUND> <MATCH_NO> <WINNER_SLACK_ID>`
+
+
+Round Kodları:
+- `QF` → Quarter Final
+- `SF` → Semi Final
+- `F`  → Final
+
+
+### Weekly Leaderboard
+Haftalık puan tablosunu gösterir.
+
+
+## 🏅 Puan Sistemi
+
+| Placement       | Points |
+|----------------|--------|
+| Champion       | +10    |
+| 2nd Place      | +5     |
+| SF Loser       | +3     |
+| Participation  | +1     |
+
+Turnuva tamamlandığında puanlar otomatik yazılır.
+
 ---
+
+## 🧠 Mimari
+
+Tournament sistemi aşağıdaki katmanlarla geliştirilmiştir:
+
+- `TournamentService`
+- `TournamentRepository`
+- `TournamentParticipantRepository`
+- `TournamentMatchRepository`
+- `TournamentPointsRepository`
+- `tournament_handler.py`
+
+Challenge sisteminden bağımsız çalışır.
 
 ## 📂 Klasör Yapısı
 ```

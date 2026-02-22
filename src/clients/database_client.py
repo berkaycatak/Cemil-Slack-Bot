@@ -265,6 +265,63 @@ class DatabaseClient(metaclass=SingletonMeta):
                     )
                 """)
                 
+                # Tournament Tables (MVP)
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tournaments (
+                        id TEXT PRIMARY KEY,
+                        created_by TEXT NOT NULL,
+                        status TEXT DEFAULT 'OPEN', -- OPEN | IN_PROGRESS | FINISHED
+                        max_participants INTEGER DEFAULT 8,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (created_by) REFERENCES users(slack_id) ON DELETE CASCADE
+                    )
+                """)
+
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tournament_participants (
+                        id TEXT PRIMARY KEY,
+                        tournament_id TEXT NOT NULL,
+                        user_id TEXT NOT NULL,
+                        joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(tournament_id, user_id),
+                        FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+                        FOREIGN KEY (user_id) REFERENCES users(slack_id) ON DELETE CASCADE
+                    )
+                """)
+
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tournament_matches (
+                        id TEXT PRIMARY KEY,
+                        tournament_id TEXT NOT NULL,
+                        round TEXT NOT NULL, -- QF | SF | F
+                        match_no INTEGER NOT NULL,
+                        player1_id TEXT NOT NULL,
+                        player2_id TEXT NOT NULL,
+                        winner_id TEXT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(tournament_id, round, match_no),
+                        FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+                        FOREIGN KEY (player1_id) REFERENCES users(slack_id) ON DELETE CASCADE,
+                        FOREIGN KEY (player2_id) REFERENCES users(slack_id) ON DELETE CASCADE,
+                        FOREIGN KEY (winner_id) REFERENCES users(slack_id) ON DELETE SET NULL
+                    )
+                """)
+
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tournament_weekly_points (
+                        id TEXT PRIMARY KEY,
+                        week_start TEXT NOT NULL, -- YYYY-MM-DD (Monday)
+                        user_id TEXT NOT NULL,
+                        points INTEGER DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(week_start, user_id),
+                        FOREIGN KEY (user_id) REFERENCES users(slack_id) ON DELETE CASCADE
+                    )
+                """)
+
                 # Challenge Hub Tabloları
                 # Foreign key'leri aç (challenge tabloları için)
                 cursor.execute("PRAGMA foreign_keys = ON")
@@ -1393,6 +1450,11 @@ class DatabaseClient(metaclass=SingletonMeta):
                 
                 # User indexes
                 ("idx_users_slack_id", "users", "slack_id"),
+                # Tournament indexes
+                ("idx_tournaments_status", "tournaments", "status"),
+                ("idx_tournament_participants_tournament", "tournament_participants", "tournament_id"),
+                ("idx_tournament_participants_user", "tournament_participants", "user_id"),
+                ("idx_tournament_weekly_points_week", "tournament_weekly_points", "week_start"),
             ]
             
             for index_name, table_name, column_name in indexes:
